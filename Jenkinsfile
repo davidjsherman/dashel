@@ -46,7 +46,7 @@ pipeline {
 				node('debian') {
 					unstash 'dist-debian'
 					dir('build/dashel') {
-						sh 'LANG=C ctest'
+						sh 'LANG=en_US.UTF-8 ctest'
 					}
 				}
 			}
