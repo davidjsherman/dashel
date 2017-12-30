@@ -8,8 +8,7 @@ pipeline {
 	stages {
 		stage('Prepare') {
 			steps {
-				// checkout scm -- done automatically
-				stash excludes: '.git', name: 'source'
+				checkout scm
 			}
 		}
 		stage('Compile') {
@@ -19,8 +18,7 @@ pipeline {
 						label 'debian'
 					}
 					steps {
-						unstash 'source'
-						CMake([label: 'debian'])
+						CMake([label: 'debian', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
 						stash includes: 'dist/**', name: 'dist-debian'
 						stash includes: 'build/**', name: 'build-debian'
 					}
@@ -30,8 +28,7 @@ pipeline {
 						label 'macos'
 					}
 					steps {
-						unstash 'source'
-						CMake([label: 'macos'])
+						CMake([label: 'macos', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
 						stash includes: 'dist/**', name: 'dist-macos'
 					}
 				}
@@ -40,8 +37,7 @@ pipeline {
 						label 'windows'
 					}
 					steps {
-						unstash 'source'
-						CMake([label: 'windows'])
+						CMake([label: 'windows', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
 						stash includes: 'dist/**', name: 'dist-windows'
 					}
 				}
@@ -69,12 +65,12 @@ pipeline {
 						label 'debian'
 					}
 					steps {
-						unstash 'dist-debian'
-						unstash 'source'
-						dir('dashel') {
-							sh 'which debuild && debuild -i -us -uc -b'
+						dir('build/debian/package') {
+							// We must rebuild in a subdirectory to prevent debuild from polluting the workspace parent
+							sh 'git clone --depth 1 --single-branch $GIT_URL'
+							sh '(cd dashel && which debuild && debuild -i -us -uc -b)'
+							sh 'mv libdashel*.deb libdashel*.changes libdashel*.build $WORKSPACE/dist/debian/'
 						}
-						sh 'mv libdashel*.deb libdashel*.changes libdashel*.build dist/debian/'
 						stash includes: 'dist/**', name: 'dist-debian'
 					}
 				}
