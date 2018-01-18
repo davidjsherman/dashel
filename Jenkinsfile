@@ -27,7 +27,7 @@ pipeline {
 						label 'debian'
 					}
 					steps {
-						CMake([label: 'debian', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
+						CMake([label: 'debian', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=ON'])
 						stash includes: 'dist/**', name: 'dist-debian'
 						stash includes: 'build/**', name: 'build-debian'
 					}
@@ -37,7 +37,7 @@ pipeline {
 						label 'macos'
 					}
 					steps {
-						CMake([label: 'macos', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
+						CMake([label: 'macos', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=ON'])
 						stash includes: 'dist/**', name: 'dist-macos'
 					}
 				}
@@ -46,7 +46,7 @@ pipeline {
 						label 'windows'
 					}
 					steps {
-						CMake([label: 'windows', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=OFF'])
+						CMake([label: 'windows', getCmakeArgs: '-DBUILD_SHARED_LIBS:BOOL=ON'])
 						stash includes: 'dist/**', name: 'dist-windows'
 					}
 				}
